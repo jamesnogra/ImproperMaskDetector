@@ -3,6 +3,7 @@ import random, string, sys
 
 frames_to_skip = 50
 saved_image_size = 64 #size of the saved faces in pixels
+min_pixel_face = 16 #minimum size of face in pixels to be detected
 
 try:
 	url = sys.argv[1]
@@ -36,7 +37,7 @@ while (True):
 			gray,
 			scaleFactor=1.3,
 			minNeighbors=3,
-			minSize=(saved_image_size, saved_image_size)
+			minSize=(min_pixel_face, min_pixel_face)
 		)
 		#draw rectangles in faces
 		for (x, y, w, h) in faces:
