@@ -16,14 +16,18 @@ def randomString(stringLength=8):
 	letters = string.ascii_lowercase
 	return ''.join(random.choice(letters) for i in range(stringLength))
 
-video_pafy = pafy.new(url)
-video_from_url = video_pafy.getbest().url
-cap = cv2.VideoCapture(video_from_url)
+if (url=="webcam"):
+	frames_to_skip = 1
+	cap = cv2.VideoCapture(0)
+else:
+	video_pafy = pafy.new(url)
+	video_from_url = video_pafy.getbest().url
+	cap = cv2.VideoCapture(video_from_url)
 
 #get the frames of the video
 while (True):
 	#get the frame number
-	frame_id = int(round(cap.get(1)))
+	frame_id = int(round(cap.get(1))) + 1
 	#print("Getting frame "+str(frame_id)+"...")
 	#read frame by frame
 	ret, frame = cap.read()
@@ -49,9 +53,9 @@ while (True):
 			temp_filename = "untagged/" + randomString() + ".jpg"
 			cv2.imwrite(temp_filename, crop_img)
 			print("Face saved at " + temp_filename)
-		#cv2.imshow('frame',frame) #uncomment this to see live tracking
+		cv2.imshow('frame',frame) #uncomment this to see live tracking
 	#to exit, press 'q'
-	if cv2.waitKey(20) & 0xFF == ord('q'):
+	if cv2.waitKey(20) & 0xFF == ord('q'): #press `q` to quit
 		break
 	if (not ret):
 		break
