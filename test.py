@@ -3,6 +3,7 @@ import numpy as np         # dealing with arrays
 import os                  # dealing with directories
 from tqdm import tqdm      # a nice pretty percentage bar for tasks. Thanks to viewer Daniel BA1/4hler for this suggestion
 import sys
+import pafy
 
 import settings
 from model import *
@@ -11,10 +12,25 @@ from serve import get_model_api
 min_pixel_face = 16 #minimum size of face in pixels to be detected
 model_api = get_model_api()
 
+try:
+    source = sys.argv[1]
+    mirror = False
+except IndexError:
+    print("Using webcam as source of video...")
+    source = "webcam"
+    mirror = True
 
-def show_webcam(mirror=False):
+
+def show_webcam(mirror, source):
     print("\n\n\nPress 'q' to quit...")
-    cap = cv2.VideoCapture(0)
+    
+    if (source=="webcam"):
+        cap = cv2.VideoCapture(0)
+    else:
+        video_pafy = pafy.new(source)
+        video_from_url = video_pafy.getbest().url
+        cap = cv2.VideoCapture(video_from_url)
+
     while True:
         ret_val, frame = cap.read()
         if mirror: 
@@ -48,7 +64,7 @@ def show_webcam(mirror=False):
 
 
 def main():
-    show_webcam(mirror=True)
+    show_webcam(mirror, source)
 
 
 if __name__ == '__main__':
