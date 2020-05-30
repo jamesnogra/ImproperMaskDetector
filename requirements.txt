@@ -1,6 +1,6 @@
 opencv-python
 tflearn
-tensorflow==1.2.1
+tensorflow
 pafy
 youtube_dl
 tqdm
