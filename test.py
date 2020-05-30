@@ -11,6 +11,7 @@ from serve import get_model_api
 
 min_pixel_face = 16 #minimum size of face in pixels to be detected
 model_api = get_model_api()
+skip_frames = 5
 
 try:
     source = sys.argv[1]
@@ -23,6 +24,7 @@ except IndexError:
 
 def show_webcam(mirror, source):
     print("\n\n\nPress 'q' to quit...")
+    at_frame = 0
     
     if (source=="webcam"):
         cap = cv2.VideoCapture(0)
@@ -30,21 +32,23 @@ def show_webcam(mirror, source):
         video_pafy = pafy.new(source)
         video_from_url = video_pafy.getbest().url
         cap = cv2.VideoCapture(video_from_url)
+    faces = []
 
     while True:
         ret_val, frame = cap.read()
         if mirror: 
             frame = cv2.flip(frame, 1)
-        #convert the image to gray for analysis
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        #detect the faces
-        faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
-        faces = faceCascade.detectMultiScale(
-            gray,
-            scaleFactor=1.3,
-            minNeighbors=3,
-            minSize=(min_pixel_face, min_pixel_face)
-        )
+        if (at_frame%10==0):
+            #convert the image to gray for analysis
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            #detect the faces
+            faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+            faces = faceCascade.detectMultiScale(
+                gray,
+                scaleFactor=1.3,
+                minNeighbors=3,
+                minSize=(min_pixel_face, min_pixel_face)
+            )
         for (x, y, w, h) in faces:
             #crop each face
             crop_img = gray[y: y + h, x: x + w]
@@ -60,6 +64,7 @@ def show_webcam(mirror, source):
         cv2.imshow('frame', frame) #uncomment this to see live tracking
         if cv2.waitKey(20) & 0xFF == ord('q'):
             break  # q to quit
+        at_frame += 1
     cv2.destroyAllWindows()
 
 
