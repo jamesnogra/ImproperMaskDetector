@@ -7,7 +7,7 @@ The main goal of this code is to detect human faces and classify those faces if 
 * Go to the directory/folder where you downloaded the code then press Shift+Right Click then click to open PowerShell/Terminal/Command Prompt.
 * Install pip: `python get-pip.py`
 * Install tensorflow: `pip install --upgrade tensorflow`
-* Then install the rest: `pip install requirements.txt`
+* Then install the rest: `pip install -r requirements.txt`
 
 ## Testing the Trained Model
 * To test the model using a webcam: `python test.py`
