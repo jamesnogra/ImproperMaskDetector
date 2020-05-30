@@ -1,0 +1,5 @@
+opencv-python
+pafy
+youtube_dl
+tqdm
+matplotlib

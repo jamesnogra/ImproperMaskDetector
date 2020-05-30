@@ -38,7 +38,7 @@ def show_webcam(mirror, source):
         ret_val, frame = cap.read()
         if mirror: 
             frame = cv2.flip(frame, 1)
-        if (at_frame%10==0):
+        if (at_frame%5==0):
             #convert the image to gray for analysis
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             #detect the faces
