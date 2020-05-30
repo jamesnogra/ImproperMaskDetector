@@ -12,3 +12,4 @@ The main goal of this code is to detect human faces and classify those faces if 
 ## Testing the Trained Model
 * To test the model using a webcam: `python test.py`
 * To test the model using a YouTube video: `python test.py YOUTUBE_URL` example: `python test.py https://www.youtube.com/watch?v=Ft62ShND99Q`
+* Press `q` to exit in test.
