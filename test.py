@@ -45,10 +45,11 @@ def show_webcam(mirror, source):
             faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
             faces = faceCascade.detectMultiScale(
                 gray,
-                scaleFactor=1.3,
-                minNeighbors=3,
+                scaleFactor=1.1,
+                minNeighbors=5,
                 minSize=(min_pixel_face, min_pixel_face)
             )
+            at_frame = 0 #reset the frames
         for (x, y, w, h) in faces:
             #crop each face
             crop_img = gray[y: y + h, x: x + w]

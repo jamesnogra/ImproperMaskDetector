@@ -1,9 +1,10 @@
 import cv2, pafy
 import random, string, sys
 
-frames_to_skip = 50
+frames_to_skip = 10
 saved_image_size = 64 #size of the saved faces in pixels
 min_pixel_face = 16 #minimum size of face in pixels to be detected
+at_frame = 0
 
 try:
 	url = sys.argv[1]
@@ -26,26 +27,21 @@ else:
 
 #get the frames of the video
 while (True):
-	#get the frame number
-	frame_id = int(round(cap.get(1))) + 1
-	#print("Getting frame "+str(frame_id)+"...")
-	#read frame by frame
 	ret, frame = cap.read()
 	#check if we need to check this frame for faces
-	if frame_id % frames_to_skip == 0:
+	if at_frame == 0:
 		#convert the image to gray for analysis
 		gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 		#detect the faces
 		faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 		faces = faceCascade.detectMultiScale(
 			gray,
-			scaleFactor=1.3,
-			minNeighbors=3,
+			scaleFactor=1.1,
+			minNeighbors=5,
 			minSize=(min_pixel_face, min_pixel_face)
 		)
-		#draw rectangles in faces
+		#save rectangles in faces
 		for (x, y, w, h) in faces:
-			cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 			#save each face to the untagged folder
 			crop_img = frame[y: y + h, x: x + w]
 			crop_img = cv2.resize(crop_img, (saved_image_size, saved_image_size))
@@ -53,12 +49,18 @@ while (True):
 			temp_filename = "untagged/" + randomString() + ".jpg"
 			cv2.imwrite(temp_filename, crop_img)
 			print("Face saved at " + temp_filename)
-		cv2.imshow('frame',frame) #uncomment this to see live tracking
+	#draw rectangles in faces
+	for (x, y, w, h) in faces:
+		cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+	cv2.imshow('frame', frame) #uncomment this to see live tracking
 	#to exit, press 'q'
 	if cv2.waitKey(20) & 0xFF == ord('q'): #press `q` to quit
 		break
 	if (not ret):
 		break
+	at_frame += 1
+	if (at_frame>frames_to_skip):
+		at_frame = 0
 
 cap.release()
 cv2.destroyAllWindows()
