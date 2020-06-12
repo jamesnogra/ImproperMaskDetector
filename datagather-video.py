@@ -25,6 +25,8 @@ video_height = cap.get(4) # float
 #get the frames of the video
 while (True):
 	ret, frame = cap.read()
+	if (not ret):
+		exit()
 	if (video_height>=720):
 		frame = cv2.resize(frame, (int(video_width*0.65), int(video_height*0.65)))
 	#check if we need to check this frame for faces

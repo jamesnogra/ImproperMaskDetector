@@ -48,6 +48,7 @@ def get_model_api():
 	def classify_face(temp_img):
 		data = temp_img.reshape(settings.IMG_SIZE, settings.IMG_SIZE, settings.IMAGE_CHANNELS)
 		data_res_float = model.predict([data])[0]
+		max_probability = max(data_res_float)
 		data_res = np.round(data_res_float, 0)
 		str_label = '?'
 		for x in range(len(all_labels)):
@@ -55,6 +56,6 @@ def get_model_api():
 			#print("Comparing:", data_res, " and ", all_labels[x])
 			if ((data_res==all_labels[x]).all()):
 				str_label = all_classes[x]
-		return str_label
+		return str_label, max_probability
 
 	return classify_face

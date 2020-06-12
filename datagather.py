@@ -28,6 +28,8 @@ else:
 #get the frames of the video
 while (True):
 	ret, frame = cap.read()
+	if (not ret):
+		exit()
 	#check if we need to check this frame for faces
 	if at_frame == 0:
 		#convert the image to gray for analysis

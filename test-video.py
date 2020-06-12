@@ -9,7 +9,7 @@ from serve import get_model_api
 
 min_pixel_face = 16 #minimum size of face in pixels to be detected
 model_api = get_model_api()
-skip_frames = 7
+skip_frames = 5
 
 try:
     video_file = sys.argv[1]
@@ -23,14 +23,18 @@ def show_video(video_file):
     at_frame = 0
     
     cap = cv2.VideoCapture("videos/"+video_file)
-    video_width  = cap.get(3)  # float
-    video_height = cap.get(4) # float
+    video_width  = cap.get(3)  # width of the video
+    video_height = cap.get(4) # height of the video
+    video_fps = cap.get(5) #FPS of the source video
+    skip_frames = int(video_fps/3)
     faces = []
 
     while True:
         ret_val, frame = cap.read()
+        if (not ret_val):
+            exit()
         if (video_height>=720):
-            frame = cv2.resize(frame, (int(video_width*0.65), int(video_height*0.65)))
+            frame = cv2.resize(frame, (int(video_width*0.5), int(video_height*0.5)))
         if (at_frame%skip_frames==0):
             #convert the image to gray for analysis
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -38,8 +42,8 @@ def show_video(video_file):
             faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
             faces = faceCascade.detectMultiScale(
                 gray,
-                scaleFactor=1.2,
-                minNeighbors=4,
+                scaleFactor=1.1,
+                minNeighbors=5,
                 minSize=(min_pixel_face, min_pixel_face)
             )
             at_frame = 0 #reset the frames
@@ -47,14 +51,16 @@ def show_video(video_file):
             #crop each face
             crop_img = gray[y: y + h, x: x + w]
             crop_img = cv2.resize(crop_img, (settings.IMG_SIZE, settings.IMG_SIZE))
-            face_class = model_api(crop_img)
+            face_class, probability = model_api(crop_img)
+            probability = " " + str(round(probability*100, 1)) + "%"
             color = (0, 255, 0)
             if (face_class=="not_covered"):
                 color = (0, 0, 255)
             elif (face_class=="partially_covered"):
                 color = (51, 153, 255)
-            cv2.putText(frame, face_class, (x, y-5), 0, 0.5, color, 1)
-            cv2.rectangle(frame, (x, y), (x + w, y + h), color, 3)
+            if (face_class!="not_face"):
+                cv2.putText(frame, face_class, (x, y-5), 0, 0.5, color, 1)
+                cv2.rectangle(frame, (x, y), (x + w, y + h), color, 3)
         cv2.imshow('frame', frame) #uncomment this to see live tracking
         if cv2.waitKey(20) & 0xFF == ord('q'):
             break  # q to quit

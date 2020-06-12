@@ -36,6 +36,8 @@ def show_webcam(mirror, source):
 
     while True:
         ret_val, frame = cap.read()
+        if (not ret_val):
+            exit()
         if mirror: 
             frame = cv2.flip(frame, 1)
         if (at_frame%5==0):
@@ -54,14 +56,16 @@ def show_webcam(mirror, source):
             #crop each face
             crop_img = gray[y: y + h, x: x + w]
             crop_img = cv2.resize(crop_img, (settings.IMG_SIZE, settings.IMG_SIZE))
-            face_class = model_api(crop_img)
+            face_class, probability = model_api(crop_img)
+            probability = " " + str(round(probability*100, 1)) + "%"
             color = (0, 255, 0)
             if (face_class=="not_covered"):
                 color = (0, 0, 255)
             elif (face_class=="partially_covered"):
                 color = (51, 153, 255)
-            cv2.putText(frame, face_class, (x, y-5), 0, 0.5, color, 1)
-            cv2.rectangle(frame, (x, y), (x + w, y + h), color, 3)
+            if (face_class!="not_face"):
+                cv2.putText(frame, face_class, (x, y-5), 0, 0.5, color, 1)
+                cv2.rectangle(frame, (x, y), (x + w, y + h), color, 3)
         cv2.imshow('frame', frame) #uncomment this to see live tracking
         if cv2.waitKey(20) & 0xFF == ord('q'):
             break  # q to quit
