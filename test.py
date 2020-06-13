@@ -11,7 +11,7 @@ from serve import get_model_api
 
 min_pixel_face = 16 #minimum size of face in pixels to be detected
 model_api = get_model_api()
-frames_to_process = 4 #how many times in one second do we process faces
+frames_to_process = 5 #how many times in one second do we process faces
 
 try:
     mirror = False
@@ -86,7 +86,7 @@ def show_webcam(mirror, source):
                 cv2.rectangle(frame, (x, y), (x + w, y + h), color, 3)
             #cv2.rectangle(frame, (0, 0), (int(frame.shape[1]), int(frame.shape[0])), color, 10) #draw full rectangle in border
         cv2.imshow('frame', frame) #uncomment this to see live tracking
-        if cv2.waitKey(20) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord('q'):
             break  # q to quit
         at_frame += 1
     cv2.destroyAllWindows()

@@ -73,7 +73,7 @@ while (True):
 		cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 3)
 	cv2.imshow('frame', frame) #uncomment this to see live tracking
 	#to exit, press 'q'
-	if cv2.waitKey(20) & 0xFF == ord('q'): #press `q` to quit
+	if cv2.waitKey(5) & 0xFF == ord('q'): #press `q` to quit
 		break
 	if (not ret):
 		break
