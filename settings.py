@@ -6,7 +6,7 @@ IMAGE_CHANNELS = 1
 
 LR = 1e-4
 NUM_OUTPUT = 10 #this will be replaced when script runs
-NUM_EPOCHS = 100
+NUM_EPOCHS = 50
 FIRST_NUM_CHANNEL = 16
 
 TRAIN_DIR = 'tagged'
