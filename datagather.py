@@ -55,7 +55,7 @@ while (True):
 		faces = faceCascade.detectMultiScale(
 			gray,
 			scaleFactor=1.1,
-			minNeighbors=5,
+			minNeighbors=2,
 			minSize=(min_pixel_face, min_pixel_face)
 		)
 		#save rectangles in faces

@@ -64,10 +64,11 @@ def show_webcam(mirror, source):
             faces = faceCascade.detectMultiScale(
                 gray,
                 scaleFactor=1.1,
-                minNeighbors=5,
+                minNeighbors=3,
                 minSize=(min_pixel_face, min_pixel_face)
             )
             at_frame = 0 #reset the frames
+        #draw squares on faces
         for (x, y, w, h) in faces:
             #crop each face
             crop_img = gray[y: y + h, x: x + w]
@@ -79,9 +80,11 @@ def show_webcam(mirror, source):
                 color = (0, 0, 255)
             elif (face_class=="partially_covered"):
                 color = (51, 153, 255)
+            #only draw square if the classification is not `not_face`
             if (face_class!="not_face"):
                 cv2.putText(frame, face_class, (x, y-5), 0, 0.5, color, 1)
                 cv2.rectangle(frame, (x, y), (x + w, y + h), color, 3)
+            #cv2.rectangle(frame, (0, 0), (int(frame.shape[1]), int(frame.shape[0])), color, 10) #draw full rectangle in border
         cv2.imshow('frame', frame) #uncomment this to see live tracking
         if cv2.waitKey(20) & 0xFF == ord('q'):
             break  # q to quit
