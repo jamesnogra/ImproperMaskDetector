@@ -11,13 +11,12 @@ from serve import get_model_api
 
 min_pixel_face = 16 #minimum size of face in pixels to be detected
 model_api = get_model_api()
-skip_frames = 5
+frames_to_process = 4 #how many times in one second do we process faces
 
 try:
-    source = sys.argv[1]
     mirror = False
+    source = sys.argv[1]
 except IndexError:
-    print("Using webcam as source of video...")
     source = "webcam"
     mirror = True
 
@@ -27,20 +26,37 @@ def show_webcam(mirror, source):
     at_frame = 0
     
     if (source=="webcam"):
+        print("Using webcam as source of video...")
         cap = cv2.VideoCapture(0)
-    else:
+    elif "youtube" in source:
+        print("Using YouTube video as source of video...")
         video_pafy = pafy.new(source)
         video_from_url = video_pafy.getbest().url
         cap = cv2.VideoCapture(video_from_url)
-    faces = []
+    else:
+        print("Using video file " + source + " as source of video...")
+        cap = cv2.VideoCapture(source)
 
+    #determine the resolution and FPS of the source
+    video_width  = cap.get(3)  # width of the video
+    video_height = cap.get(4) # height of the video
+    video_fps = cap.get(5) #FPS (frame rate) of the source video
+    skip_frames = int(video_fps/frames_to_process)
+    print("Video source is "+str(video_width)+"x"+str(video_height)+ " at "+str(video_fps)+" FPS.")
+
+    faces = [] #empty detected faces on initialize
     while True:
         ret_val, frame = cap.read()
         if (not ret_val):
             exit()
+        #check the dimensions if needed to resize for performance
+        if (video_height>=720): #if video is large, then we resize it before processing it
+            frame = cv2.resize(frame, (int(video_width*0.65), int(video_height*0.65)))
+        #only webcam has a mirror=True
         if mirror: 
             frame = cv2.flip(frame, 1)
-        if (at_frame%5==0):
+        #only process frames at a specific frame
+        if (at_frame%skip_frames==0):
             #convert the image to gray for analysis
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             #detect the faces
