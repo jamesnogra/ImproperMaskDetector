@@ -12,6 +12,7 @@ from serve import get_model_api
 min_pixel_face = 16 #minimum size of face in pixels to be detected
 model_api = get_model_api()
 frames_to_process = 5 #how many times in one second do we process faces
+seconds_to_warn = 4 #how many seconds before not_covered faces will be warned
 
 try:
     mirror = False
@@ -43,6 +44,9 @@ def show_webcam(mirror, source):
     video_fps = cap.get(5) #FPS (frame rate) of the source video
     skip_frames = int(video_fps/frames_to_process)
     print("Video source is "+str(video_width)+"x"+str(video_height)+ " at "+str(video_fps)+" FPS.")
+
+    #detect prolonged not wearing of face mask
+    not_wearing_frame = 0
 
     faces = [] #empty detected faces on initialize
     while True:
@@ -78,14 +82,22 @@ def show_webcam(mirror, source):
             color = (0, 255, 0)
             if (face_class=="not_covered"):
                 color = (0, 0, 255)
+                not_wearing_frame += 1
             elif (face_class=="partially_covered"):
                 color = (51, 153, 255)
             #only draw square if the classification is not `not_face`
             if (face_class!="not_face"):
                 cv2.putText(frame, face_class, (x, y-5), 0, 0.5, color, 1)
                 cv2.rectangle(frame, (x, y), (x + w, y + h), color, 3)
-            #cv2.rectangle(frame, (0, 0), (int(frame.shape[1]), int(frame.shape[0])), color, 10) #draw full rectangle in border
+        #check if there are more not_covered faces detected for x amount of time
+        if not_wearing_frame>(seconds_to_warn*video_fps):
+            cv2.rectangle(frame, (0, 0), (int(frame.shape[1]), int(frame.shape[0])), (0, 0, 255), int(video_width/15)) #draw full red rectangle in border of video
+            #reset counter after a few frames
+            if not_wearing_frame>((seconds_to_warn*video_fps)+10):
+                not_wearing_frame = 0 #reset the counter after warning
+        #show frame in the window
         cv2.imshow('frame', frame) #uncomment this to see live tracking
+        #wait for the user to press `q`
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break  # q to quit
         at_frame += 1
