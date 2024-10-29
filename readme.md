@@ -1,6 +1,6 @@
 # Face Mask Usage Detection Using Inception Network
 
-![alt text](https://james.iamcebu.com/images/demo-face-mask.gif)
+![Demo Facemask](https://james.iamcebu.com/images/demo-face-mask.gif)
 
 The main goal of this code is to detect human faces and classify those faces if it is wearing a face mask or covering properly.
 
